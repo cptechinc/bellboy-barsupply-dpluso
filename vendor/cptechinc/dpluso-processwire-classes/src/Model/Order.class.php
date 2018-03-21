@@ -1,6 +1,13 @@
 <?php 
-	class Order {
+	/**
+	 * Class to Set up and define what Quotes, CartQuote, and Sales Orders Need to do and provide them
+	 * with shared functions and properties that they can extend
+	 */
+	abstract class Order {
 		use ThrowErrorTrait;
+		use MagicMethodTraits;
+		use CreateFromObjectArrayTraits;
+		use CreateClassArrayTraits;
 		
 		protected $sessionid;
 		protected $recno;
@@ -62,22 +69,10 @@
 		/* =============================================================
 			GETTER FUNCTIONS
 		============================================================ */
-		public function __get($property) {
-			$method = "get_{$property}";
-			if (method_exists($this, $method)) {
-				return $this->$method();
-			} elseif (property_exists($this, $property)) {
-				return $this->$property;
-			} else {
-				$this->error("This property ($property) does not exist");
-				return false;
-			}
-		}
-		
-		public function __isset($property){
-		    return isset($this->$property);
-		} 
-
+		/**
+		 * Returns if Order has notes attached
+		 * @return bool Y = true | N = false
+		 */
 		public function has_notes() {
 			return $this->hasnotes == 'Y' ? true : false;
 		}
@@ -92,13 +87,6 @@
 		
 		/* =============================================================
 			SETTER FUNCTIONS
+			MagicMethodTraits has set()
 		============================================================ */
-		public function set($property, $value) {
-			if (property_exists($this, $property) !== true) {
-				$this->error("This property ($property) does not exist ");
-				return false;
-			}
-			$this->$property = $value;
-		}
-		
 	}

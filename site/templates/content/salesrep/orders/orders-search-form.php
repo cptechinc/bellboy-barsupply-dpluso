@@ -62,8 +62,8 @@
             <label class="small text-muted">From Date </label>
 			<?php $name = 'orderdate[]'; $value = $orderpanel->get_filtervalue('orderdate', 1); ?>
 			<?php include $config->paths->content."common/date-picker.php"; ?>
-            <label class="small text-muted">Through Date </label>
-        </div>
+			<label class="small text-muted">Through Date </label>
+		</div>
 	</div>
 	</br>
 	<div class="form-group">

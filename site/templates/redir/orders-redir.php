@@ -124,12 +124,15 @@
 
 	switch ($action) {
 		case 'load-cust-orders':
-			$session->remove('ordersearch');
 			$custID = $input->get->text('custID');
 			$data = array('DBNAME' => $config->dbName, 'ORDRHED' => false, 'CUSTID' => $custID, 'TYPE' => 'O');
-			$session->loc = $config->pages->ajax."load/orders/cust/".urlencode($custID)."/"."?ordn=".$linkaddon;
 			$session->{'orders-loaded-for'} = $custID;
 			$session->{'orders-updated'} = date('m/d/Y h:i A');
+			if ($input->get->shipID) {
+				$session->loc = $config->pages->ajax."load/sales-orders/cust/{$input->get->custID}/shipto-{$input->get->shipID}?ordn=".$linkaddon;
+			} else {
+				$session->loc = $config->pages->ajax."load/sales-orders/cust/{$input->get->custID}/?ordn=".$linkaddon;
+			}
 			break;
 		case 'load-orders':
 			$data = array('DBNAME' => $config->dbName, 'REPORDRHED' => false, 'TYPE' => 'O');
@@ -151,6 +154,26 @@
 			} else {
 				$session->loc = Paginator::paginateurl($config->pages->ajax."load/orders/salesrep/?ordn=".$ordn.$linkaddon, $pagenumber, "salesrep", '');
 				if ($input->get->readonly) {$session->loc = $config->pages->editorder."?ordn=".$ordn; }
+			} elseif ($input->get->readonly) {
+				$session->loc = $config->pages->editorder."?ordn=".$ordn; 
+			} else {
+				$url = new Purl\Url($config->pages->ajaxload);
+				$insertafter = ($input->get->text('type') == 'history') ? 'sales-history' : 'sales-orders';
+				$url->path->add($insertafter);
+				
+				if ($input->get->custID) {
+					$url->path->add('customer');
+					$insertafter = $input->get->text('custID');
+					$url->path->add($insertafter);
+					
+					if ($input->get->shipID) {
+						$insertafter = "shipto-{$input->get->text('shipID')}";
+						$url->path->add($insertafter);
+					}
+				}
+				$url->query = "ordn=$ordn$linkaddon";
+				Paginator::paginate_purl($url, $pagenumber, $insertafter);
+				$session->loc = $url->getUrl();
 			}
 			break;
 		case 'get-order-tracking':
@@ -165,6 +188,24 @@
 				$session->loc = $config->pages->ajax.'load/order/tracking/?ordn='.$ordn;
 			} else {
 				$session->loc = Paginator::paginateurl($config->pages->ajax."load/orders/salesrep/".urlencode($custID)."/?ordn=".$ordn.$linkaddon."&show=tracking", $pagenumber, $custID, '');
+				$url = new Purl\Url($config->pages->ajaxload);
+				$insertafter = ($input->get->text('type') == 'history') ? 'sales-history' : 'sales-orders';
+				$url->path->add($insertafter);
+				
+				if ($input->get->custID) {
+					$url->path->add('customer');
+					$insertafter = $input->get->text('custID');
+					$url->path->add($insertafter);
+					
+					if ($input->get->shipID) {
+						$insertafter = "shipto-{$input->get->text('shipID')}";
+						$url->path->add($insertafter);
+					}
+				}
+				$url->query = "ordn=$ordn$linkaddon";
+				$url->query->set('show', 'tracking');
+				Paginator::paginate_purl($url, $pagenumber, $insertafter);
+				$session->loc = $url->getUrl();
 			}
 			break;
 		case 'get-order-documents':
@@ -190,6 +231,33 @@
 				}
 
 			}
+			
+			if ($input->get->page == 'edit') {
+				$session->loc = $config->pages->ajax.'load/order/documents/?ordn='.$ordn;
+			} else {
+				$url = new Purl\Url($config->pages->ajaxload);
+				$insertafter = ($input->get->text('type') == 'history') ? 'sales-history' : 'sales-orders';
+				$url->path->add($insertafter);
+				
+				if ($input->get->custID) { // If looking at customer orders
+					$url->path->add('customer');
+					$insertafter = $input->get->text('custID');
+					$url->path->add($insertafter);
+					
+					if ($input->get->shipID) { // If looking at customer shipto orders
+						$insertafter = "shipto-{$input->get->text('shipID')}";
+						$url->path->add($insertafter);
+					}
+				}
+				$url->query = "ordn=$ordn$linkaddon";
+				$url->query->set('show', 'documents');
+				
+				if ($input->get->itemdoc) {
+					$url->query->set('itemdoc', $input->get->text('itemdoc'));
+				}
+				Paginator::paginate_purl($url, $pagenumber, $insertafter);
+				$session->loc = $url->getUrl();
+			} 
 			$data = array('DBNAME' => $config->dbName, 'ORDDOCS' => $ordn, 'CUSTID' => $custID);
 			break;
 		case 'search-cust-orders':

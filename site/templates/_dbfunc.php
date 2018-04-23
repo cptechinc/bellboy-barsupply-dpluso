@@ -2397,8 +2397,9 @@
 		if ($debug) {
 			return returnsqlquery($sql->queryString, $switching, $withquotes);
 		} else {
-			$sql->execute();
-			return $sql->fetchAll(PDO::FETCH_ASSOC);
+			$sql->execute($q->params);
+			$sql->setFetchMode(PDO::FETCH_CLASS, 'Vendor');
+			return $sql->fetchAll();
 		}
 	}
 

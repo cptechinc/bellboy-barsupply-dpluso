@@ -1,59 +1,53 @@
-{
-    "gatewayid": {
-        "id": 102,
-        "type": "FieldtypeText",
-        "flags": 0,
-        "name": "gatewayid",
 <?php 
      class II_ItemCostingScreen extends TableScreenMaker {
 		protected $tabletype = 'normal'; // grid or normal
-		protected $type = 'ii-cost'; 
+		protected $type = 'ii-cost';
 		protected $title = 'Item Costing';
-		protected $datafilename = 'iicost'; 
+		protected $datafilename = 'iicost';
 		protected $testprefix = 'iicost';
 		protected $datasections = array();
-        
+
         /* =============================================================
           PUBLIC FUNCTIONS
        	============================================================ */
         public function generate_screen() {
             $bootstrap = new Contento();
             $content = $this->generate_itemtable();
-			
+
 			$listitems = $bootstrap->li('role=presentation|class=active', $bootstrap->a('href=#whse|aria-controls=warehouse|role=tab|data-toggle=tab', 'Warehouse'));
 			$listitems .= $bootstrap->li('role=presentation', $bootstrap->a('href=#vendor|aria-controls=vendor|role=tab|data-toggle=tab', 'Vendor'));
 			$listitems .= $bootstrap->li('role=presentation', $bootstrap->a('href=#lastpurchase|aria-controls=lastpurchase|role=tab|data-toggle=tab', 'Last Purchase'));
 			$content .= $bootstrap->ul('class=nav nav-tabs|role=tablist', $listitems);
-			
+
 			$tabs = $bootstrap->div('role=tabpanel|class=tab-pane active|id=whse', $this->generate_whsesection());
 			$tabs .= $bootstrap->div('role=tabpanel|class=tab-pane|id=vendor', $this->generate_vendorsection());
 			$tabs .= $bootstrap->div('role=tabpanel|class=tab-pane|id=lastpurchase', $this->generate_lastpurchasedtable());
-			
+
 			$content .= $bootstrap->div('', $bootstrap->div('class=tab-content', $tabs));
 			return $content;
         }
-		
+
 		public function generate_itemtable() {
 			$tb = new Table('class=table table-striped table-condensed table-excel');
 			$tb->tr();
 			$tb->td('', '<b>Item ID</b>')->td('', $this->json['itemid'])->td('colspan=2', $this->json['desc1']);
-			
+
 			$tb->tr();
 			$tb->td('', '<b>Sales UoM</b>')->td('', $this->json['sale uom'])->td('colspan=2', $this->json['desc2']);
-			
+
 			$tb->tr();
 			$tb->td('', '<b>Stan Cost</b>')->td('class=text-center', $this->json['stan cost'])->td('', '<b>Avg Cost:</b> ' . $this->json['avg cost']);
 			$tb->td('', '<b>Avg Cost:</b> ' . $this->json['last cost']);
 			return $tb->close();
 		}
-		
+
 		public function generate_whsesection() {
 			$bootstrap = new Contento();
 			$content = '';
 			if (!isset($this->json['warehouse'])) return $content;
-			
+
 			foreach ($this->json['warehouse'] as $whse) {
-				$content .= '<h3>'.$whse['whse name'].'</h3>'; 
+				$content .= '<h3>'.$whse['whse name'].'</h3>';
 				$tb = new Table('class=table table-striped table-bordered table-condensed table-excel no-bottom');
 				$tb->tablesection('thead')->tr();
 					foreach ($this->json['columns']['warehouse'] as $column) {
@@ -74,7 +68,7 @@
 			}
 			return $content;
 		}
-		
+
 		public function generate_vendorsection() {
 			$bootstrap = new Contento();
 			$content = '';
@@ -92,7 +86,7 @@
 						$tb->tr()->td('', 'PO Order Code:')->td('', $vendor['vend po code']);
 						$content .= $tb->close();
 					$content .= $bootstrap->close('div'); // CLOSES col-sm-6
-					
+
 					$content .= $bootstrap->open('div', 'class=col-sm-6');
 						$tb = new Table('class=table table-striped table-bordered table-condensed table-excel no-bottom');
 						$tb->tr();
@@ -113,12 +107,12 @@
 						$tb->closetablesection('tbody');
 						$content .= $tb->close();
 					$content .= $bootstrap->close('div'); // CLOSES col-sm-6
-					
+
 				$content .= $bootstrap->close('div');
 			}
 			return $content;
 		}
-		
+
 		function generate_lastpurchasedtable() {
 			$tb = new Table('class=table table-striped table-bordered table-condensed table-excel no-bottom');
 			$tb->tr();

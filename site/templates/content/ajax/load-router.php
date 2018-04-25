@@ -3,7 +3,7 @@
         case 'customers':
             include $config->paths->content . 'ajax/load/cust-router.php';
             break;
-        case 'orders': //ADDED 12/22/2016 $input->urlSegment(3) is going to be cust or salesrep
+        case 'sales-orders': //ADDED 12/22/2016 $input->urlSegment(3) is going to be cust or salesrep
             include $config->paths->content . 'ajax/load/orders-router.php';
             break;
         case 'quotes': //ADDED 12/22/2016 $input->urlSegment(3) is going to be cust or salesrep

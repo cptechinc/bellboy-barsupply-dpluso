@@ -11,6 +11,12 @@
 		protected $forprint = false;
 
 		/**
+		 * format for print page?
+		 * @var bool
+		 */
+		protected $forprint = false;
+
+		/**
 		 * Table Type
 		 * @var string normal | grid
 		 */
@@ -35,7 +41,7 @@
 
         protected static $trackingcolumns = array('Tracking Number');
         protected static $phonecolumns = array('phone', 'fax');
-        
+
         /* =============================================================
            CONSTRUCTOR AND SETTER FUNCTIONS
        ============================================================ */
@@ -49,11 +55,6 @@
 			$this->debug = $debug;
 			$this->load_filepath();
 		}
-
-
-        /* =============================================================
-          GETTER FUNCTIONS
-       ============================================================ */
 
 		/**
 		 * Turn debug on or Off

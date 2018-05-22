@@ -35,6 +35,7 @@
 
         protected static $trackingcolumns = array('Tracking Number');
         protected static $phonecolumns = array('phone', 'fax');
+        
         /* =============================================================
            CONSTRUCTOR AND SETTER FUNCTIONS
        ============================================================ */
@@ -48,12 +49,11 @@
 			$this->debug = $debug;
 			$this->load_filepath();
 		}
-<<<<<<< HEAD
+
 
         /* =============================================================
           GETTER FUNCTIONS
        ============================================================ */
-=======
 
 		/**
 		 * Turn debug on or Off
@@ -71,7 +71,7 @@
 		 * @param  string $property Property name to get value from
 		 * @return mixed           Value of Property
 		 */
->>>>>>> 87a916f0... Merge pull request #164 from cptechinc/test-fixes
+
 		public function __get($property) {
 			if (property_exists($this, $property) !== true) {
 				$this->error("This property ($property) does not exist");

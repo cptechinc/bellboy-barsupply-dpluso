@@ -120,7 +120,7 @@
 			return $q->generate_sqlquery();
 		}
 	}
-	
+
 	function can_accesscustomer($loginID, $restrictions, $custID, $debug) {
 		$SHARED_ACCOUNTS = Processwire\wire('config')->sharedaccounts;
 		if ($restrictions) {
@@ -3408,7 +3408,7 @@
 
 		switch ($interval) {
 			case 'month':
-				$q->field('custid');
+				$q->field('bookingc.custid');
 				$q->field('SUM(amount) as amount');
 				$q->group('custid');
 				break;
@@ -3419,6 +3419,9 @@
 				break;
 		}
 
+		$q->field('name');
+		$q->join('custindex.custid', 'bookingc.custid', 'left outer');
+		$q->where('custindex.shiptoid', '');
 		$sql = DplusWire::wire('database')->prepare($q->render());
 		if ($debug) {
 			return $q->generate_sqlquery($q->params);

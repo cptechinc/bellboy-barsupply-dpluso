@@ -11,12 +11,6 @@
 		protected $forprint = false;
 
 		/**
-		 * format for print page?
-		 * @var bool
-		 */
-		protected $forprint = false;
-
-		/**
 		 * Table Type
 		 * @var string normal | grid
 		 */

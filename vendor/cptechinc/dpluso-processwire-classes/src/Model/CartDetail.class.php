@@ -6,20 +6,6 @@
 		use CreateFromObjectArrayTraits;
 		use CreateClassArrayTraits;
 
-		protected $orderno;
-		protected $price;
-		protected $qty;
-		protected $qtyshipped;
-		protected $qtybackord;
-		protected $hasdocuments;
-		protected $qtyavail;
-		protected $cost;
-		protected $promocode;
-		protected $taxcodeperc;
-		protected $uomconv;
-		protected $catlgid;
-		protected $ponbr;
-
 		/**
 		 * Cart Order $
 		 * Will be sessionid
@@ -226,7 +212,7 @@
 		public function update($debug = false) {
 			return update_cartdetail($this->sessionid, $this, $debug);
 		}
-		
+
 		/**
 		 * Checks if changes were made to the Cart Detail
 		 * @return bool If this has any differences from original record

@@ -2509,7 +2509,7 @@
 		}
 	}
 
-	function get_itemgroups($debug) {
+	function get_itemgroups($debug = false) {
 		$q = (new QueryBuilder())->table('itemgroup');
 		$sql = DplusWire::wire('database')->prepare($q->render());
 

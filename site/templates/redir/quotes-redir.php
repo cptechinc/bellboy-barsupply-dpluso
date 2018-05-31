@@ -127,14 +127,14 @@ use Purl\Url;
 	switch ($action) {
 		case 'load-quotes':
 			$data = array('DBNAME' => $config->dbName, 'LOADREPQUOTEHED' => false);
-			$session->loc = $config->pages->ajax."load/quotes/salesrep/".urlencode($custID)."/?qnbr=".$linkaddon;
+			$session->loc = $config->pages->ajax."load/quotes/?qnbr=".$linkaddon;
 			$session->{'quotes-loaded-for'} = $user->loginid;
 			$session->{'quotes-updated'} = date('m/d/Y h:i A');
 			break;
 		case 'load-cust-quotes':
 			$custID = $input->get->text('custID');
 			$shipID = $input->get->text('shipID');
-			$url = new Purl\Url($config->pages->ajax."load/quotes/cust/");
+			$url = new Purl\Url($config->pages->ajax."load/quotes/customer/");
 			$url->path->add($custID);
 			if (!empty($shipID)) {
 				$url->path->add("shipto-$shipID");

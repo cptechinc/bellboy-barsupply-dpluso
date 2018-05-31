@@ -123,9 +123,9 @@
 			$session->{'orders-loaded-for'} = $custID;
 			$session->{'orders-updated'} = date('m/d/Y h:i A');
 			if ($input->get->shipID) {
-				$session->loc = $config->pages->ajax."load/sales-orders/cust/{$input->get->custID}/shipto-{$input->get->shipID}?ordn=".$linkaddon;
+				$session->loc = $config->pages->ajax."load/sales-orders/customer/{$input->get->custID}/shipto-{$input->get->shipID}?ordn=".$linkaddon;
 			} else {
-				$session->loc = $config->pages->ajax."load/sales-orders/cust/{$input->get->custID}/?ordn=".$linkaddon;
+				$session->loc = $config->pages->ajax."load/sales-orders/customer/{$input->get->custID}/?ordn=".$linkaddon;
 			}
 			break;
 		case 'load-orders':

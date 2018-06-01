@@ -1373,6 +1373,10 @@
 			return $q->generate_sqlquery($q->params);
 		} else {
 			$sql->execute($q->params);
+			if ($useclass) {
+				$sql->setFetchMode(PDO::FETCH_CLASS, 'SalesOrderHistory');
+				return $sql->fetchAll();
+			}
 			return $sql->fetchAll(PDO::FETCH_ASSOC);
 		}
 	}
@@ -2428,14 +2432,17 @@
 		$sql->execute($switching);
 		return $sql->fetchColumn();
 	}
+
 /* =============================================================
 	VENDOR FUNCTIONS
 ============================================================ */
-	function getvendors($debug) {
-		$sql = Processwire\wire('database')->prepare("SELECT * FROM vendors WHERE shipfrom = ''");
-		$switching = array(); $withquotes = array();
+	function get_vendors($debug = false) {
+		$q = (new QueryBuilder())->table('vendors');
+		$q->where('shipfrom', '');
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
 		if ($debug) {
-			return returnsqlquery($sql->queryString, $switching, $withquotes);
+			return $q->generate_sqlquery($q->params);
 		} else {
 			$sql->execute($q->params);
 			$sql->setFetchMode(PDO::FETCH_CLASS, 'Vendor');
@@ -2496,15 +2503,14 @@
 		}
 	}
 
-
 	function get_unitofmeasurements($debug) {
 		$q = (new QueryBuilder())->table('unitofmeasure');
 		$sql = DplusWire::wire('database')->prepare($q->render());
 
 		if ($debug) {
-			return $sql->queryString;
+			return $q->generate_sqlquery($q->params);
 		} else {
-			$sql->execute();
+			$sql->execute($q->params);
 			return $sql->fetchAll(PDO::FETCH_ASSOC);
 		}
 	}
@@ -2514,9 +2520,9 @@
 		$sql = DplusWire::wire('database')->prepare($q->render());
 
 		if ($debug) {
-			return $sql->queryString;
+			return $q->generate_sqlquery($q->params);
 		} else {
-			$sql->execute();
+			$sql->execute($q->params);
 			return $sql->fetchAll(PDO::FETCH_ASSOC);
 		}
 	}
@@ -3642,7 +3648,7 @@
 		$q->where('bookdate', date('Ymd'));
 
 		if (DplusWire::wire('user')->hascontactrestrictions) {
-			$q->where('salesperson1', DplusWire::wire('user')->salespersonid);
+			$q->where('salesrep', DplusWire::wire('user')->salespersonid);
 		}
 
 		$q->where('custid', $custID);
@@ -3662,16 +3668,14 @@
 
 	function get_bookingtotalsbyshipto($sessionID, $custID, $shipID, $filter, $filtertypes, $interval = '', $debug = false) {
 		$q = (new QueryBuilder())->table('bookingc');
-
 		$q->where('custid', $custID);
+
 		if (!empty($shipID)) {
 			$q->where('shiptoid', $shipID);
 		}
 
 		if (DplusWire::wire('user')->hascontactrestrictions) {
 			$q->where('salesrep', DplusWire::wire('user')->salespersonid);
-		} else {
-
 		}
 
 		$q->generate_filters($filter, $filtertypes);

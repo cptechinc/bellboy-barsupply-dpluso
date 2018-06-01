@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-<?php
-=======
 <?php
 	/**
 	 * Class for Items that reside in the itemsearch table
@@ -48,9 +45,6 @@
 		 * @var string
 		 */
         protected $image;
-
-        protected $create_date;
-
 
         /**
          * How many in a case

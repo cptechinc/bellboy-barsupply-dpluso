@@ -1,4 +1,4 @@
-<?php $vendors = getvendors(false); ?>
+<?php $vendors = get_vendors(false); ?>
 <?php if ($appconfig->show_vendorinfononstock) : ?>
 	<h3>Choose Vendor</h3>
 	<div class="table-responsive">

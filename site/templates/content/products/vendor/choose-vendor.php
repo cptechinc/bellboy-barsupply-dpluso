@@ -1,6 +1,6 @@
 <?php
     $returnpage = \Purl\Url::parse($input->get->text('returnpage'));
-    $vendors = getvendors(false);
+    $vendors = get_vendors(false);
     echo $returnpage;
 ?>
 <table class="table table-bordered table-condensed" id="vendors-table">

@@ -267,10 +267,7 @@
 		static public function generate_formattedcelldata($type, $parent, $column) {
             $bootstrap = new Contento();
 			$celldata = '';
-<<<<<<< HEAD
-=======
 			$qtyregex = "/(quantity)/i";
->>>>>>> 963151d42... Merge pull request #171 from cptechinc/new-detail
 
 			if ($type == 'D') {
                 $celldata = (strlen($parent[$column['id']]) > 0) ? date($column['date-format'], strtotime($parent[$column['id']])) : $parent[$column['id']];

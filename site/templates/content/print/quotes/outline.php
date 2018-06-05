@@ -6,7 +6,7 @@
 </div>
 <div class="row">
 	<div class="col-xs-6">
-		<img src="<?= $appconfig->companylogo->url; ?>" alt="<?= $appconfig->companydisplayname.' logo'; ?>">
+		<img src="<?= $appconfig->companylogo->url; ?>" alt="<?= $appconfig->companydisplayname.' logo'; ?>" style="max-width: 100%;">
 	</div>
 	<div class="col-xs-6 text-right">
 		<h1>Quote # <?= $quote->quotnbr; ?></h1>

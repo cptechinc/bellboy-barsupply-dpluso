@@ -6,7 +6,7 @@
 </div>
 <div class="row">
 	<div class="col-sm-5">
-		<img src="<?= $appconfig->companylogo->url; ?>" alt="<?= $appconfig->companydisplayname.' logo'; ?>">
+		<img src="<?= $appconfig->companylogo->url; ?>" alt="<?= $appconfig->companydisplayname.' logo'; ?>" style="max-width: 100%;">
 	</div>
 	<div class="col-sm-7 text-right">
 		<h1>Order # <?= $ordn; ?></h1>
@@ -21,7 +21,7 @@
 			<a href="<?= $config->documentstorage.$pdfmaker->filename; ?>" target="_blank" class="btn btn-primary hidden-print"><i class="fa fa-file-pdf-o" aria-hidden="true"></i> View PDF</a>
 		<?php endif; ?>
 	</div>
-	
+
 	<div class="col-xs-6">
 		<div class="row">
 			<table class="pull-right">

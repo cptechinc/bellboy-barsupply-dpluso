@@ -42,25 +42,25 @@
 		/* =============================================================
 			SalesOrderPanelInterface Functions
 		============================================================ */
-		public function get_ordercount($debug = false) {
-			$count = count_customersaleshistory($this->sessionID, $this->custID, $this->shipID, $this->filters, $this->filterable, $debug);
+		public function get_ordercount($loginID = '', $debug = false) {
+			$count = count_customersaleshistory($this->custID, $this->shipID, $this->filters, $this->filterable, $loginID, $debug);
 			return $debug ? $count : $this->count = $count;
 		}
 
-		public function get_orders($debug = false) {
+		public function get_orders($loginID = '', $debug = false) {
 			$useclass = true;
 			if ($this->tablesorter->orderby) {
 				if ($this->tablesorter->orderby == 'orderdate') {
-					$orders = get_customersaleshistoryorderdate($this->sessionID, $this->custID, $this->shipID, DplusWire::wire('session')->display, $this->pagenbr, $this->tablesorter->sortrule, $this->filters, $this->filterable, $useclass, $debug);
+					$orders = get_customersaleshistoryorderdate($this->custID, $this->shipID, DplusWire::wire('session')->display, $this->pagenbr, $this->tablesorter->sortrule, $this->filters, $this->filterable, $loginID, $useclass, $debug);
 				} elseif ($this->tablesorter->orderby == 'invdate') {
-					$orders = get_customersaleshistoryinvoicedate($this->sessionID, $this->custID, $this->shipID, DplusWire::wire('session')->display, $this->pagenbr, $this->tablesorter->sortrule, $this->filters, $this->filterable, $useclass, $debug);
+					$orders = get_customersaleshistoryinvoicedate($this->custID, $this->shipID, DplusWire::wire('session')->display, $this->pagenbr, $this->tablesorter->sortrule, $this->filters, $this->filterable, $loginID, $useclass, $debug);
 				} else {
-					$orders = get_customersaleshistoryorderby($this->sessionID, $this->custID, $this->shipID, DplusWire::wire('session')->display, $this->pagenbr, $this->tablesorter->sortrule, $this->tablesorter->orderby, $this->filters, $this->filterable, $useclass, $debug);
+					$orders = get_customersaleshistoryorderby($this->custID, $this->shipID, DplusWire::wire('session')->display, $this->pagenbr, $this->tablesorter->sortrule, $this->tablesorter->orderby, $this->filters, $this->filterable, $loginID, $useclass, $debug);
 				}
 			} else {
 				// DEFAULT BY ORDER DATE SINCE SALES ORDER # CAN BE ROLLED OVER
 				$this->tablesorter->sortrule = 'DESC';
-				$orders = get_customersaleshistoryorderdate($this->sessionID, $this->custID, $this->shipID, DplusWire::wire('session')->display, $this->pagenbr, $this->tablesorter->sortrule, $this->filters, $this->filterable, $useclass, $debug);
+				$orders = get_customersaleshistoryorderdate($this->custID, $this->shipID, DplusWire::wire('session')->display, $this->pagenbr, $this->tablesorter->sortrule, $this->filters, $this->filterable, $loginID, $useclass, $debug);
 			}
 			return $debug ? $orders : $this->orders = $orders;
 		}

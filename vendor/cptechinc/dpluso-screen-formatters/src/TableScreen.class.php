@@ -120,8 +120,8 @@
 		 * @param string $sessionID Session ID
 		 */
 		public function __construct($sessionID) {
-            $this->sessionID = $sessionID;
-			$this->userID = Processwire\wire('user')->loginid;
+			$this->sessionID = $sessionID;
+			$this->userID = DplusWire::wire('user')->loginid;
 			$this->load_filepath();
 		}
 

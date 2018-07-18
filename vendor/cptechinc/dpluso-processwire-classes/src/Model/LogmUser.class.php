@@ -96,6 +96,14 @@
 		}
 
 		/**
+		 * Returns the custperm loginid that Anything above a salesrep uses
+		 * @return string LoginID
+		 */
+		public static function get_toplevelcustpermloginid() {
+			return 'admin';
+		}
+
+		/**
 		 * Loads an object of this class
 		 * @param  string  $loginID User's Dplus Login ID
 		 * @param  bool $debug   Whether to return the SQL to create the object or the object
@@ -103,5 +111,24 @@
 		 */
 		public static function load($loginID, $debug = false) {
 			return get_logmuser($loginID, $debug);
+		}
+
+		/**
+		 * Looks for logmuser by login, then tries to get their name
+		 * @param  string $loginID User LoginID
+		 * @return string          The User's Name
+		 */
+		public static function find_username($loginID) {
+			$user = self::load($loginID);
+			return !empty($user) ? $user->name : 'User Not Found';
+		}
+
+		/**
+		 * Returns an array of LogmUsers
+		 * @param  bool   $debug Run in Debug? If so, return SQL Query
+		 * @return array         Returns an array of LogmUsers
+		 */
+		public static function load_userlist($debug = false) {
+			return get_logmuserlist($debug);
 		}
 	}

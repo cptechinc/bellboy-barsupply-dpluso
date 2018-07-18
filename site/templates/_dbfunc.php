@@ -5,28 +5,77 @@
 /* =============================================================
 	LOGIN FUNCTIONS
 ============================================================ */
-	function is_validlogin($sessionID) {
-		$sql = Processwire\wire('database')->prepare("SELECT IF(validlogin = 'Y',1,0) FROM logperm WHERE sessionid = :sessionID LIMIT 1");
-		$switching = array(':sessionID' => $sessionID);
-		$sql->execute($switching);
-		return $sql->fetchColumn();
+	/**
+	 * Returns if User is logged in
+	 * @param  string $sessionID Session Identifier
+	 * @param  bool   $debug     Run in debug? If so, return SQL Query
+	 * @return bool              Is user logged in?
+	 */
+	function is_validlogin($sessionID, $debug = false) {
+		$q = (new QueryBuilder())->table('logperm');
+		$q->field($q->expr("IF(validlogin = 'Y', 1, 0)"));
+		$q->where('sessionid', $sessionID);
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+		if ($debug) {
+			return $q->generate_sqlquery();
+		} else {
+			$sql->execute($q->params);
+			return $sql->fetchColumn();
+		}
 	}
 
-	function get_loginerrormsg($sessionID) {
-		$sql = Processwire\wire('database')->prepare("SELECT errormsg FROM logperm WHERE sessionid = :sessionID");
-		$switching = array(':sessionID' => $sessionID);
-		$sql->execute($switching);
-		return $sql->fetchColumn();
+	/**
+	 * Returns Error Message for Session
+	 * @param  string $sessionID Session Identifier
+	 * @param  bool   $debug     Run in debug? If so, return SQL Query
+	 * @return string            Error Message for Login / Session
+	 */
+	function get_loginerrormsg($sessionID, $debug = false) {
+		$q = (new QueryBuilder())->table('logperm');
+		$q->field('errormsg');
+		$q->where('sessionid', $sessionID);
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+		if ($debug) {
+			return $q->generate_sqlquery();
+		} else {
+			$sql->execute($q->params);
+			return $sql->fetchColumn();
+		}
 	}
 
-	function get_loginrecord($sessionID) {
-		$sql = Processwire\wire('database')->prepare("SELECT IF(restrictcustomers = 'Y',1,0) as restrictcustomer, IF(restrictaccess = 'Y',1,0) as restrictuseraccess, logperm.* FROM logperm WHERE sessionid = :sessionID");
-		$switching = array(':sessionID' => $sessionID);
-		$sql->execute($switching);
-		return $sql->fetch(PDO::FETCH_ASSOC);
+	/**
+	 * Returns record for the session's Login
+	 * @param  string $sessionID Session Identifier
+	 * @param  bool   $debug     Run in debug? If so, return SQL Query
+	 * @return array             Login Record
+	 */
+	function get_loginrecord($sessionID, $debug = false) {
+		$q = (new QueryBuilder())->table('logperm');
+		$q->field($q->expr("IF(restrictcustomers = 'Y', 1, 0) as restrictcustomers"));
+		$q->field($q->expr("logperm.*"));
+		$q->where('sessionid', $sessionID);
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+		if ($debug) {
+			return $q->generate_sqlquery();
+		} else {
+			$sql->execute($q->params);
+			return $sql->fetch(PDO::FETCH_ASSOC);
+		}
 	}
 
-	function has_restrictedcustomers($sessionID, $debug = false) {
+/* =============================================================
+	LOGMPERM FUNCTIONS
+============================================================ */
+	/**
+	 * Returns the Order Number / Quote Number created
+	 * @param  string $sessionID Session Identifier
+	 * @param  bool   $debug     Run in debug? IF so return SQL Query
+	 * @return string            Dplus (Order / Quote) Number
+	 */
+	function get_createdordn($sessionID, $debug = false) {
 		$q = (new QueryBuilder())->table('logperm');
 		$q->field($q->expr("IF(restrictcustomers = 'Y',1,0)"));
 		$q->where('sessionid', $sessionID);
@@ -72,7 +121,19 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function get_custperm(Customer $customer, $loginID = false, $debug = false) {
+=======
+	/**
+	 * Returns Customer Perm Record
+	 * Used for getting fields like amount sold, last sale date specific to a salesrep, or even overall
+	 * @param  Customer $customer   Customer object, with customer properties like shiptoid
+	 * @param  string   $loginID    User Login ID if blank, will use current user's login
+	 * @param  bool     $debug      Run in debug? IF so return SQL Query
+	 * @return array                Custperm Record
+	 */
+	function get_custperm(Customer $customer, $loginID = '', $debug = false) {
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 		$loginID = (!empty($loginID)) ? $loginID : DplusWire::wire('user')->loginid;
 		$user = LogmUser::load($loginID);
 
@@ -92,7 +153,18 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function count_custperm($userID = false, $debug = false) {
+=======
+	/**
+	 * Returns the number of records in the custperm table
+	 * @param  string   $userID User Login ID
+	 * @param
+	 * @param  bool     $debug  Run in debug? IF so return SQL Query
+	 * @return int              Number of custperm records
+	 */
+	function count_custperm($userID = '', $debug = false) {
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 		$q = (new QueryBuilder())->table('custperm');
 		$q->field('COUNT(*)');
 		if ($userID) {
@@ -124,7 +196,19 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function insert_custperm(Contact $customer, $debug = false) {
+=======
+	/**
+	 * Insert custperm record
+	 * @param  Customer $customer Customer Object with properties needed such as salesper1, custid, shiptoid
+	 * @param  string   $loginID  User Login ID, if blank, will use current User ID
+	 * @param  bool     $debug    Run in debug?
+	 * @return string             SQL Query
+	 */
+	function insert_custperm(Customer $customer, $loginID, $debug = false) {
+		$loginID = (!empty($loginID)) ? $loginID : DplusWire::wire('user')->loginid;
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 		$q = (new QueryBuilder())->table('custperm');
 		$q->mode('insert');
 		$q->set('loginid', DplusWire::wire('user')->loginid);
@@ -173,6 +257,10 @@
 			$q->field($q->expr('COUNT(*)'));
 			$q->where('loginid', 'in', [$loginID, DplusWire::wire('config')->sharedaccounts]);
 			$sql = DplusWire::wire('database')->prepare($q->render());
+<<<<<<< HEAD
+=======
+
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 			if ($debug) {
 				return $q->generate_sqlquery($q->params);
 			} else {
@@ -783,6 +871,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function insert_newcustindexrecord($customer, $debug) { // DEPRECATED 3/5/2018
 		$query = returninsertlinks($customer);
 		$sql = Processwire\wire('database')->prepare("INSERT INTO custindex (".$query['columnlist'].") VALUES (".$query['valuelist'].")");
@@ -795,6 +884,15 @@
 		}
 	}
 
+=======
+	/**
+	 * Inserts record into custindex table
+	 * @param  Contact $contact The Contact object you will add
+	 * @param  bool    $debug   Run in debug?
+	 * @return string           Returns SQL Query
+	 * @uses get_maxcustindexrecnbr()
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function insert_customerindexrecord(Contact $contact, $debug = false) {
 		$contact->set('recno', get_maxcustindexrecnbr() + 1);
 		$properties = array_keys($contact->_toArray());
@@ -816,6 +914,15 @@
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/**
+	 * Updates the contact record in the custindex table
+	 * @param  Contact $contact Contact to update
+	 * @param  bool    $debug   Run in debug
+	 * @return string           SQL Query
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function update_contact(Contact $contact, $debug = false) {
 		$originalcontact = Contact::load($contact->custid, $contact->shiptoid, $contact->contact);
 		$properties = array_keys($contact->_toArray());
@@ -841,6 +948,16 @@
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/**
+	 * Updates the contact Name / ID in the custindex table for that contact
+	 * @param  Contact $contact   Customer Contact
+	 * @param  string  $contactID New Contact Name / ID
+	 * @param  bool    $debug     Run in Debug?
+	 * @return string             SQL Query
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function change_contactid(Contact $contact, $contactID, $debug = false) {
 		$originalcontact = Contact::load($contact->custid, $contact->shiptoid, $contact->contact);
 		$q = (new QueryBuilder())->table('custindex');
@@ -862,6 +979,14 @@
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/**
+	 * Get the last record number (recno) from the custindex table
+	 * @param  bool   $debug Run in debug?
+	 * @return string        Record Number
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function get_maxcustindexrecnbr($debug = false) {
 		$q = (new QueryBuilder())->table('custindex');
 		$q->field($q->expr('MAX(recno)'));
@@ -873,7 +998,18 @@
 			return $sql->fetchColumn();
 		}
 	}
+<<<<<<< HEAD
 
+=======
+	/**
+	 * Change custindex Customer ID
+	 * // NOTE Usually used for new customers, once dplus custid is provided
+	 * @param  string $originalcustID Current Customer ID
+	 * @param  string $newcustID      new Customer ID (Provided by Dplus)
+	 * @param  bool   $debug          Run in debug?
+	 * @return string                 SQL Query
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function change_custindexcustid($originalcustID, $newcustID, $debug = false) {
 		$q = (new QueryBuilder())->table('custindex');
 		$q->mode('update');
@@ -1194,6 +1330,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function hasanorderlocked($sessionID) {
 		$sql = Processwire\wire('database')->prepare("SELECT COUNT(*) FROM ordlock WHERE sessionid = :sessionID");
 		$switching = array(':sessionID' => $sessionID);
@@ -1220,6 +1357,27 @@
 		$switching = array(':sessionID' => $sessionID);
 		$sql->execute($switching);
 		return (intval($sql->fetchColumn()) + 1);
+=======
+	/**
+	 * Returns the order number locked by this session
+	 * @param  string $sessionID Session Identifier
+	 * @param  bool   $debug     Run in debug? If so return SQL Query
+	 * @return string            Order Number
+	 */
+	function get_lockedordn($sessionID, $debug = false) {
+		$q = (new QueryBuilder())->table('orddocs');
+		$q->field('orderno');
+		$q->where('sessionid', $sessionID);
+		$q->limit(1);
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+		if ($debug) {
+			return $q->generate_sqlquery($q->params);
+		} else {
+			$sql->execute($q->params);
+			return $sql->fetchColumn();
+		}
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	}
 
 	function get_orderdocs($sessionID, $ordn, $debug = false) {
@@ -3121,7 +3279,17 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function get_carthead($sessionID, $useclass = false, $debug = false) {
+=======
+	/**
+	 * Returns the carthead record for this session
+	 * @param  string $sessionID Session Identifier
+	 * @param  bool   $debug     Run in debug? If so returns SQL Query
+	 * @return CartQuote            CartQuote
+	 */
+	function get_carthead($sessionID, $debug = false) {
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 		$q = (new QueryBuilder())->table('carthed');
 		$q->where('sessionid', $sessionID);
 		$sql = Processwire\wire('database')->prepare($q->render());
@@ -3138,6 +3306,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function editcarthead($sessionID, $carthead, $debug) {
 		$orginalcarthead = getcarthead($sessionID, false);
 		$query = returnpreppedquery($originalcarthead, $carthead);
@@ -3153,6 +3322,14 @@
 		}
 	}
 
+=======
+	/**
+	 * Returns the number of Cart Items for this session
+	 * @param  string $sessionID Session Identifier
+	 * @param  bool   $debug     Run in debug? If so return SQL Query
+	 * @return int               Number of Cart Items for this session
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function count_cartdetails($sessionID, $debug = false) {
 		$q = (new QueryBuilder())->table('cartdet');
 		$q->field('COUNT(*)');
@@ -3167,7 +3344,18 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function get_cartdetails($sessionID, $useclass = false, $debug = false) {
+=======
+	/**
+	 * Returns an array of CartDetails
+	 * @param  string $sessionID Session Identifier
+	 * @param  bool   $useclass  Use CartDetail Class?
+	 * @param  bool   $debug     Run in debug? If so return SQL Query
+	 * @return array             CartDetails
+	 */
+	function get_cartdetails($sessionID, $useclass = true, $debug = false) {
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 		$q = (new QueryBuilder())->table('cartdet');
 		$q->where('sessionid', $sessionID);
 		$sql = Processwire\wire('database')->prepare($q->render());
@@ -3184,6 +3372,16 @@
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/**
+	 * Return the CartDetail for this session and Line Number
+	 * @param  string     $sessionID Session Identifier
+	 * @param  int        $linenbr   Detail Line Number
+	 * @param  bool       $debug     Run in debug?
+	 * @return CartDetail            Cart Detail Line
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function get_cartdetail($sessionID, $linenbr, $debug = false) {
 		$q = (new QueryBuilder())->table('cartdet');
 		$q->where('sessionid', $sessionID);
@@ -3199,7 +3397,19 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function insert_carthead($sessionID, $custID, $shipID, $debug) {
+=======
+	/**
+	 * Inserts new carthead record
+	 * @param  string $sessionID Session Identifier
+	 * @param  string $custID    Customer ID
+	 * @param  string $shipID    Customer Shipto ID
+	 * @param  bool   $debug     Run in debug?
+	 * @return string            SQL Query
+	 */
+	function insert_carthead($sessionID, $custID, $shipID = '', $debug = false) {
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 		$q = (new QueryBuilder())->table('carthed');
 		$q->mode('insert');
 		$q->set('sessionid', $sessionID);
@@ -3217,6 +3427,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function getcartline($sessionID, $linenbr, $debug) {
 		$sql = Processwire\wire('database')->prepare("SELECT * FROM cartdet WHERE sessionid = :sessionID AND linenbr = :linenbr");
 		$switching = array(':sessionID' => $sessionID, ':linenbr' => $linenbr); $withquotes = array(true, true);
@@ -3259,6 +3470,15 @@
 		}
 	}
 
+=======
+	/**
+	 * Updates the CartDetail record (cartdet) in the database
+	 * @param  string     $sessionID Session Identifier
+	 * @param  CartDetail $detail    CartDetail Object with changes, will use CartDetail properties to load original
+	 * @param  bool       $debug     Run in debug?
+	 * @return string                SQL Query
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function update_cartdetail($sessionID, CartDetail $detail, $debug = false) {
 		$originaldetail = CartDetail::load($sessionID, $detail->linenbr);
 		$properties = array_keys($detail->_toArray());
@@ -3284,6 +3504,16 @@
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/**
+	 * Inserts CartDetail (cartdet) record into database
+	 * @param  string     $sessionID Session Identifier
+	 * @param  CartDetail $detail    CartDetail object to insert
+	 * @param  bool       $debug     Run in debug?
+	 * @return string               SQL Query
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function insert_cartdetail($sessionID, CartDetail $detail, $debug = false) {
 		$properties = array_keys($detail->_toArray());
 		$q = (new QueryBuilder())->table('cartdet');
@@ -3623,6 +3853,22 @@
 			return $sql->fetchColumn();
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	/**
+	 * Returns the Item Description from the cross reference table
+	 * @param  string $itemID Item ID / Part Number
+	 * @param  bool   $debug  Run in debug? If so, return SQL Query
+	 * @return string         Item Description
+	 */
+	function get_xrefitemdescription($itemID, $debug = false) {
+		$q = (new QueryBuilder())->table('itemsearch');
+		$q->field('desc1');
+		$q->where('itemid', $itemID);
+		$q->limit(1);
+		$sql = DplusWire::wire('database')->prepare($q->render());
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 
 	function getitemdescription($itemID, $debug) {
 		$sql = Processwire\wire('database')->prepare("SELECT desc1 FROM itemsearch WHERE itemid = :itemid LIMIT 1");
@@ -3634,6 +3880,23 @@
 			return $sql->fetchColumn();
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	/**
+	 * Returns the record number for the next item
+	 * @param  string $itemID     Item ID / Part Number
+	 * @param  string $nextorprev Next or (prev)iou Record
+	 * @param  bool   $debug      Run in debug? If so return SQL query
+	 * @return int                Record Number
+	 */
+	function get_nextitemrecno($itemID, $nextorprev, $debug = false) {
+		$q = (new QueryBuilder())->table('itemsearch');
+		$expression = $nextorprev == 'next' ? "MAX(recno) + 1" : "MIN(recno) - 1";
+		$q->field($q->expr($expression));
+		$q->where('itemid', $itemID);
+		$sql = DplusWire::wire('database')->prepare($q->render());
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 
 	function getnextrecno($itemID, $nextorprev, $debug) {
 		if ($nextorprev == 'next') {
@@ -3649,6 +3912,21 @@
 			return $sql->fetchColumn();
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	/**
+	 * Returns the itemID for the record with the provided recno
+	 * @param  int    $recno      Record Number
+	 * @param  bool   $debug      Run in debug? If so return SQL query
+	 * @return string             Item Id
+	 */
+	function get_itemidbyrecno($recno, $debug = false) {
+		$q = (new QueryBuilder())->table('itemsearch');
+		$q->field('itemid');
+		$q->where('recno', $recno);
+		$sql = DplusWire::wire('database')->prepare($q->render());
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 
 	function getitembyrecno($recno, $debug) {
 		$sql = Processwire\wire('database')->prepare("SELECT itemid FROM itemsearch WHERE recno = :recno");
@@ -3671,7 +3949,14 @@
 	 */
 	function get_xrefitem($itemID, $custID = '', $vendorID = '', $debug = false) {
 		$q = (new QueryBuilder())->table('itemsearch');
+<<<<<<< HEAD
 		$q->where('itemid', $itemID);
+=======
+		$itemquery = (new QueryBuilder())->table('itemsearch');
+		$itemquery->field('itemid');
+		$itemquery->where('itemid', $itemID);
+		$itemquery->where('origintype', ['I', 'L']); // ITEMID found by the ITEMID, or by short item lookup // NOTE USED at Stempf
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 
 		if (!empty($custID)) {
 			$q->where('origintype', 'C');
@@ -3696,9 +3981,27 @@
 	/* =============================================================
 		TABLE FORMATTER FUNCTIONS
 	============================================================ */
+<<<<<<< HEAD
 	function getformatter($user, $formatter, $debug) {
 		$sql = Processwire\wire('database')->prepare("SELECT data FROM tableformatter WHERE user = :user AND formattertype = :formatter LIMIT 1");
 		$switching = array(':user' => $user, ':formatter' => $formatter); $withquotes = array(true, true);
+=======
+	/**
+	 * Returns Formatter for User
+	 * @param  string $userID    String
+	 * @param  string $formatter Formatter type
+	 * @param  bool   $debug     Run in debug? If so, return SQL Query
+	 * @return string            JSON encoded string of the formatter
+	 */
+	function get_formatter($userID, $formatter, $debug = false) {
+		$q = (new QueryBuilder())->table('tableformatter');
+		$q->field('data');
+		$q->where('user', $userID);
+		$q->where('formattertype', $formatter);
+		$q->limit(1);
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 		if ($debug) {
 			return returnsqlquery($sql->queryString, $switching, $withquotes);
 		} else {
@@ -3707,6 +4010,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function addformatter($user, $formatter, $data, $debug) {
 		$sql = Processwire\wire('database')->prepare("INSERT INTO tableformatter (user, formattertype, data) VALUES (:user, :formatter, :data)");
 		$switching = array(':user' => $user, ':formatter' => $formatter, ':data' => $data); $withquotes = array(true, true, true);
@@ -3718,6 +4022,15 @@
 		}
 	}
 
+=======
+	/**
+	 * Returns if user has a formatter saved for that formatter type
+	 * @param  string $userID    User ID
+	 * @param  string $formatter Formatter Type
+	 * @param  bool   $debug     Run in debug? If so, return SQL Query
+	 * @return array             Response array
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function does_tableformatterexist($userID, $formatter, $debug = false) {
 		$q = (new QueryBuilder())->table('tableformatter');
 		$q->field($q->expr('COUNT(*)'));
@@ -3733,6 +4046,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function checkformatterifexists($user, $formatter, $debug) {
 		$sql = Processwire\wire('database')->prepare("SELECT COUNT(*) FROM tableformatter WHERE user = :user AND formattertype = :formatter");
 		$switching = array(':user' => $user, ':formatter' => $formatter); $withquotes = array(true, true);
@@ -3744,6 +4058,16 @@
 		}
 	}
 
+=======
+	/**
+	 * Get the max id for that user and that formatter type
+	 * // NOTE used to check if newly created formatter is more than the last saved one
+	 * @param  string $userID    User ID
+	 * @param  string $formatter Formatter Type
+	 * @param  bool   $debug     Run in debug? If so, return SQL Query
+	 * @return int               Max table formatter ID
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function get_maxtableformatterid($userID, $formatter, $debug = false) {
 		$q = (new QueryBuilder())->table('tableformatter');
 		$q->field($q->expr('MAX(id)'));
@@ -3759,6 +4083,7 @@
 		}
 	}
 
+<<<<<<< HEAD
 	function getmaxtableformatterid($user, $formatter, $debug) {
 		$sql = Processwire\wire('database')->prepare("SELECT MAX(id) FROM tableformatter WHERE user = :user AND formattertype = :formatter");
 		$switching = array(':user' => $user, ':formatter' => $formatter); $withquotes = array(true, true);
@@ -3781,6 +4106,16 @@
 		}
 	}
 
+=======
+	/**
+	 * Updates the formatter for that user
+	 * @param  string $userID    User ID
+	 * @param  string $formatter Formatter Type
+	 * @param  string $data      JSON encoded string
+	 * @param  bool   $debug     Run in debug? If so, return SQL Query
+	 * @return array             Response array
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function update_formatter($userID, $formatter, $data, $debug = false) {
 		$q = (new QueryBuilder())->table('tableformatter');
 		$q->mode('update');
@@ -3797,6 +4132,17 @@
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/**
+	 * Creates the formatter for that user
+	 * @param  string $userID    User ID
+	 * @param  string $formatter Formatter Type
+	 * @param  string $data      JSON encoded string
+	 * @param  bool   $debug     Run in debug? If so, return SQL Query
+	 * @return array             Response array
+	 */
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 	function create_formatter($userID, $formatter, $data, $debug = false) {
 		$q = (new QueryBuilder())->table('tableformatter');
 		$q->mode('insert');
@@ -3906,8 +4252,12 @@
 	function get_logmuser($loginID, $debug = false) {
 		$q = (new QueryBuilder())->table('logm');
 		$q->where('loginid', $loginID);
+<<<<<<< HEAD
 
 		$sql = Processwire\wire('database')->prepare($q->render());
+=======
+		$sql = DplusWire::wire('database')->prepare($q->render());
+>>>>>>> 966f2037... Merge pull request #187 from cptechinc/log-signin
 
 		if ($debug) {
 			return $q->generate_sqlquery($q->params);
@@ -3918,8 +4268,21 @@
 		}
 	}
 
+	function get_logmuserlist($debug = false) {
+		$q = (new QueryBuilder())->table('logm');
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+		if ($debug) {
+			return $q->generate_sqlquery($q->params);
+		} else {
+			$sql->execute($q->params);
+			$sql->setFetchMode(PDO::FETCH_CLASS, 'LogmUser');
+			return $sql->fetchAll();
+		}
+	}
+
 	/* =============================================================
-		LOGM FUNCTIONS
+		OOKING FUNCTIONS
 	============================================================ */
 	/**
 	 * Return the Number of bookings made that day, for a salesrep, if need be
@@ -4444,8 +4807,6 @@
 
 		if ($user->get_dplusrole() == DplusWire::wire('config')->roles['sales-rep']) {
 			$q->where('salesrep', DplusWire::wire('user')->salespersonid);
-		} else {
-
 		}
 
 		$q->where('custid', $custID);
@@ -4475,5 +4836,118 @@
 		} else {
 			$sql->execute($q->params);
 			return $sql->fetchAll(PDO::FETCH_ASSOC);
+		}
+	}
+
+	/* =============================================================
+		SIGNIN LOG FUNCTIONS
+	============================================================ */
+
+	/**
+	 * Return the user signins for today that the User has access to
+	 * @param  string $day  Date      current day's date
+	 * @uses User dplusrole
+	 */
+	function get_daysignins($day, $debug = false) {
+		$day = empty(date('Y-m-d', strtotime($day))) ? date('Y-m-d') : date('Y-m-d', strtotime($day));
+		$q = (new QueryBuilder())->table('log_signin');
+		$q->where($q->expr("DATE(date) = STR_TO_DATE([], '%Y-%m-%d')", [$day]));
+		$q->order('date DESC');
+
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+		if ($debug) {
+			return $q->generate_sqlquery($q->params);
+		} else {
+			$sql->execute($q->params);
+			$sql->setFetchMode(PDO::FETCH_CLASS, 'SigninLog');
+			return $sql->fetchAll();
+		}
+	}
+
+	/**
+	 * Return the number of user signins for today that the User has access to
+	 * @param  string $day  Date
+	 * @uses User dplusrole
+	 */
+	function count_daysignins($day, $debug = false) {
+		$day = empty(date('Y-m-d', strtotime($day))) ? date('Y-m-d') : date('Y-m-d', strtotime($day));
+		$q = (new QueryBuilder())->table('log_signin');
+		$q->field('COUNT(*)');
+		$q->where($q->expr("DATE(date) = STR_TO_DATE([], '%Y-%m-%d')", [$day]));
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+		if ($debug) {
+			return $q->generate_sqlquery($q->params);
+		} else {
+			$sql->execute($q->params);
+			return $sql->fetchColumn();
+		}
+	}
+
+	/**
+	 * Returns the log_signin records that match the filter
+	 * @param  array $filter      Array of filters and values for each filter (column)
+	 * @param  array $filtertypes Array of the possible filters and their properties
+	 * @param  bool  $debug       Run in debug? If so, return SQL Query
+	 * @return array              log_signin records
+	 */
+	function get_logsignins($filter, $filtertypes, $debug = false) {
+		$q = (new QueryBuilder())->table('log_signin');
+		$q->order('date DESC');
+
+		if (!empty($filter)) {
+			$q->generate_filters($filter, $filtertypes);
+		}
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+		if ($debug) {
+			return $q->generate_sqlquery($q->params);
+		} else {
+			$sql->execute($q->params);
+			return $sql->fetchAll();
+		}
+	}
+
+	/**
+	 * Inserts log of user signins for today that the User has access to
+	 * @param  string $sessionID  sessionid
+	 * @param  string $userID     loginID
+	 * @uses User dplusrole
+	 */
+	function insert_logsignin($sessionID, $userID, $debug) {
+		$date = date('Y-m-d H:i:s');
+		$q = (new QueryBuilder())->table('log_signin');
+		$q->mode('insert');
+		$q->set('sessionid', $sessionID);
+		$q->set('user', $userID);
+		$q->set('date', $date);
+
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+		if ($debug) {
+			return $q->generate_sqlquery($q->params);
+		} else {
+			$sql->execute($q->params);
+			return $q->generate_sqlquery($q->params);
+		}
+	}
+
+	/**
+	 * Checks to see if sessionid already exists in log-signin table
+	 * @param  string $sessionID  sessionid
+	 * @uses User dplusrole
+	 */
+	function has_loggedsignin($sessionID, $debug = false) {
+		$q = (new QueryBuilder())->table('log_signin');
+		$q->field('COUNT(*)');
+		$q->where('sessionid', $sessionID);
+		$sql = DplusWire::wire('database')->prepare($q->render());
+
+		if ($debug) {
+			return $q->generate_sqlquery($q->params);
+		} else {
+			$sql->execute($q->params);
+			return $sql->fetchColumn();
 		}
 	}

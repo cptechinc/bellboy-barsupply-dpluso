@@ -95,8 +95,12 @@
 		public static function is_saleshistory($ordn, $debug = false) {
 			return is_ordersaleshistory($ordn, $debug);
 		}
-
-		public static function read_custid($ordn, $debug) {
-			return get_custidfromsaleshistory($ordn, $debug);
+		
+		public static function find_custid($ordn = '', $debug = false) {
+			if (isset($this)) {
+				return $this->orderno;
+			} else {
+				return get_custidfromsaleshistory($ordn, $debug);
+			}
 		}
 	}

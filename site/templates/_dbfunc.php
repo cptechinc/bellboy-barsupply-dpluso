@@ -134,10 +134,6 @@
 			return $sql->fetchColumn();
 		}
 	}
-	/**
-	 * Returns Customer Perm Record
-	 * Used for getting fields like amount sold, last sale date specific to a salesrep, or even overall
-=======
 
 	/**
 	 * Returns Customer Perm Record
@@ -166,7 +162,6 @@
 			return $sql->fetch(PDO::FETCH_ASSOC);
 		}
 	}
-=======
 
 	/**
 	 * Returns the number of records in the custperm table
@@ -190,7 +185,6 @@
 			return $sql->fetchColumn();
 		}
 	}
-=======
 
 	/**
 	 * Insert custperm record
@@ -685,6 +679,14 @@
 /* =============================================================
 	CUST INDEX FUNCTIONS
 ============================================================ */
+	/**
+	 * Returns Distinct Customer Index Records that the user has access to
+	 * @param  int    $limit   Number of Records to return
+	 * @param  int    $page    Page Number to start from
+	 * @param  string $loginID User Login ID, if blank, will use current user
+	 * @param  bool   $debug   Run in debug? If so, will return SQL Query
+	 * @return array           Distinct Customer Index Records
+	 */
 	function get_distinctcustindexpaged($limit = 10, $page = 1, $loginID = '', $debug = false) {
 		$loginID = (!empty($loginID)) ? $loginID : DplusWire::wire('user')->loginid;
 		$user = LogmUser::load($loginID);
@@ -759,19 +761,29 @@
 			$permquery->where('loginid', [$loginID, $SHARED_ACCOUNTS]);
 			$q->where('(custid, shiptoid)','in', $permquery);
 		}
-
 		$fieldstring = implode(", ' ', ", array_keys(Contact::generate_classarray()));
 
 		$q->where($q->expr("UCASE(REPLACE(CONCAT($fieldstring), '-', '')) LIKE UCASE([])", [$search]));
 		$q->limit($limit, $q->generate_offset($page, $limit));
 
 		if (DplusWire::wire('config')->cptechcustomer == 'stempf') {
-			$q->order($q->expr('custid <> []', [$search]));
+			if (!empty($orderbystring)) {
+				$q->order($q->generate_orderby($orderbystring));
+			} else {
+				$q->order($q->expr('custid <> []', [$search]));
+			}
 			$q->group('custid, shiptoid');
 		} elseif (DplusWire::wire('config')->cptechcustomer == 'stat') {
+			if (!empty($orderbystring)) {
+				$q->order($q->generate_orderby($orderbystring));
+			}
 			$q->group('custid');
 		} else {
-			$q->order($q->expr('custid <> []', [$search]));
+			if (!empty($orderbystring)) {
+				$q->order($q->generate_orderby($orderbystring));
+			} else {
+				$q->order($q->expr('custid <> []', [$search]));
+			}
 		}
 
 
@@ -861,7 +873,6 @@
 			return $sql->fetchAll(PDO::FETCH_ASSOC);
 		}
 	}
-=======
 
 	/**
 	 * Inserts record into custindex table
@@ -890,7 +901,6 @@
 			return $q->generate_sqlquery($q->params);
 		}
 	}
-=======
 
 	/**
 	 * Updates the contact record in the custindex table
@@ -922,7 +932,6 @@
 			return $q->generate_sqlquery($q->params);
 		}
 	}
-=======
 
 	/**
 	 * Updates the contact Name / ID in the custindex table for that contact
@@ -951,7 +960,6 @@
 			return $q->generate_sqlquery($q->params);
 		}
 	}
-=======
 
 	/**
 	 * Get the last record number (recno) from the custindex table
@@ -969,7 +977,6 @@
 			return $sql->fetchColumn();
 		}
 	}
-
 	/**
 	 * Change custindex Customer ID
 	 * // NOTE Usually used for new customers, once dplus custid is provided
@@ -3268,7 +3275,6 @@
 			return $sql->fetchColumn();
 		}
 	}
-=======
 
 	/**
 	 * Returns the carthead record for this session
@@ -3285,7 +3291,6 @@
 			return $q->generate_sqlquery($q->params);
 		} else {
 			$sql->execute($q->params);
-=======
 			$sql->setFetchMode(PDO::FETCH_CLASS, 'CartQuote'); // CAN BE SalesOrder|SalesOrderEdit
 			return $sql->fetch();
 		}
@@ -3310,7 +3315,6 @@
 			return $sql->fetchColumn();
 		}
 	}
-=======
 
 	/**
 	 * Returns an array of CartDetails
@@ -3335,7 +3339,6 @@
 			return $sql->fetchAll(PDO::FETCH_ASSOC);
 		}
 	}
-=======
 
 	/**
 	 * Return the CartDetail for this session and Line Number
@@ -3358,7 +3361,6 @@
 			return $sql->fetch();
 		}
 	}
-=======
 
 	/**
 	 * Inserts new carthead record
@@ -3385,7 +3387,6 @@
 			return $q->generate_sqlquery($q->params);
 		}
 	}
-=======
 
 	/**
 	 * Updates the CartDetail record (cartdet) in the database
@@ -3417,7 +3418,6 @@
 			return $q->generate_sqlquery($q->params);
 		}
 	}
-=======
 
 	/**
 	 * Inserts CartDetail (cartdet) record into database
@@ -3735,8 +3735,6 @@
 		}
 	}
 
-=======
-
 	/**
 	 * Returns the Item Description from the cross reference table
 	 * @param  string $itemID Item ID / Part Number
@@ -3757,8 +3755,6 @@
 			return $sql->fetchColumn();
 		}
 	}
-
-=======
 
 	/**
 	 * Returns the record number for the next item
@@ -3781,8 +3777,6 @@
 			return $sql->fetchColumn();
 		}
 	}
-
-=======
 
 	/**
 	 * Returns the itemID for the record with the provided recno
@@ -3814,7 +3808,6 @@
 	 */
 	function get_xrefitem($itemID, $custID = '', $vendorID = '', $debug = false) {
 		$q = (new QueryBuilder())->table('itemsearch');
-=======
 		$itemquery = (new QueryBuilder())->table('itemsearch');
 		$itemquery->field('itemid');
 		$itemquery->where('itemid', $itemID);
@@ -3862,7 +3855,6 @@
 	/* =============================================================
 		TABLE FORMATTER FUNCTIONS
 	============================================================ */
-=======
 	/**
 	 * Returns Formatter for User
 	 * @param  string $userID    String
@@ -3884,7 +3876,6 @@
 			$sql->execute($q->params);
 			return $sql->fetchColumn();
 		}
-=======
 	}
 
 	/**
@@ -3908,7 +3899,6 @@
 			return $sql->fetchColumn();
 		}
 	}
-=======
 
 	/**
 	 * Get the max id for that user and that formatter type
@@ -3932,7 +3922,6 @@
 			return $sql->fetchColumn();
 		}
 	}
-=======
 
 	/**
 	 * Updates the formatter for that user
@@ -3957,7 +3946,6 @@
 			return array('sql' => $q->generate_sqlquery($q->params), 'success' => $sql->rowCount() ? true : false, 'updated' => $sql->rowCount() ? true : false, 'querytype' => 'update');
 		}
 	}
-=======
 
 	/**
 	 * Creates the formatter for that user
@@ -4077,9 +4065,6 @@
 		$q = (new QueryBuilder())->table('logm');
 		$q->where('loginid', $loginID);
 		$sql = DplusWire::wire('database')->prepare($q->render());
-=======
-		$sql = DplusWire::wire('database')->prepare($q->render());
->>>>>>> dee18fda78ec3fc804e1402b2e25b9dfd0f7046e
 
 		if ($debug) {
 			return $q->generate_sqlquery($q->params);
